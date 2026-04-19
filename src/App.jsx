@@ -5,11 +5,14 @@ import Profile from './pages/Profile'
 import Home from './pages/Home'
 import Signin from './pages/Signin'
 import Signup from './pages/Signup'
+import Header from './components/Header'
   
 
 const App = () => {
   return (
+    
     <BrowserRouter>
+      <Header />
       <Routes>
         <Route path="/healthcheck" element={<h1 className='text-amber-700'>yo it is fine</h1>} />
         <Route path="/" element={<Home />} />
