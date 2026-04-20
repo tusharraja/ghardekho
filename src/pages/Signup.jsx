@@ -1,7 +1,54 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const navigate = useNavigate();
+
+  const [formdata, setFormdata] = React.useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormdata({ ...formdata, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formdata),
+      });
+
+      const data = await response.json();
+
+      if (
+        response.status === 409 ||
+        data?.message?.toLowerCase().includes("already")
+      ) {
+        console.warn("User already exists");
+        return;
+      }
+
+      if (!response.ok) {
+        console.error("Signup failed:", data);
+        return;
+      }
+
+      console.log(data);
+      navigate("/signin");
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <section className="relative flex min-h-[calc(100vh-73px)] items-center justify-center overflow-hidden px-4 py-10 sm:px-6 lg:px-8">
       <div className="pointer-events-none absolute -top-24 -left-20 h-72 w-72 rounded-full bg-amber-300/40 blur-3xl" />
@@ -20,7 +67,7 @@ const Signup = () => {
           </p>
         </div>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="username"
@@ -35,6 +82,7 @@ const Signup = () => {
               required
               placeholder="Enter your username"
               className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+              onChange={handleChange}
             />
           </div>
 
@@ -52,6 +100,7 @@ const Signup = () => {
               required
               placeholder="you@example.com"
               className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+              onChange={handleChange}
             />
           </div>
 
@@ -69,6 +118,7 @@ const Signup = () => {
               required
               placeholder="Create a strong password"
               className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+              onChange={handleChange}
             />
           </div>
 
